@@ -1,23 +1,25 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref, defineProps } from 'vue'
 import i18n from '@/i18n'
 
-const setting = ref({
-  chinese: true,
-  fullWidthP_: false,
-  letters: false,
-  numbers: false
-})
-// 从localStorage加载设置
-onMounted(() => {
-  const savedSettings = window.localStorage.getItem('wordStatisticSettings')
-  if (savedSettings) {
-    setting.value = JSON.parse(savedSettings)
+const props = defineProps<{
+  setting: {
+    chinese: boolean
+    fullWidthP_: boolean
+    letters: boolean
+    numbers: boolean
   }
+  onUpdateSetting:(val: any) => void
+}>()
+const localSetting = ref({
+  chinese: props.setting.chinese,
+  fullWidthP_: props.setting.fullWidthP_,
+  letters: props.setting.letters,
+  numbers: props.setting.numbers,
 })
-// 保存设置到localStorage
+// 保存设置
 function saveSettings () {
-  window.localStorage.setItem('wordStatisticSettings', JSON.stringify(setting.value))
+  props.onUpdateSetting(localSetting.value)
 }
 
 </script>
@@ -25,18 +27,17 @@ function saveSettings () {
 <template>
   <div class="checkbox-group">
     <label>
-      <input type="checkbox" v-model="setting.chinese" @change="saveSettings"> {{i18n.t('chinese')}}
+      <input type="checkbox" v-model="localSetting.chinese" @change="saveSettings"> {{i18n.t('chinese')}}
     </label>
     <label>
-      <input type="checkbox" v-model="setting.fullWidthP_" @change="saveSettings">  {{i18n.t('fullWidthP_')}}
+      <input type="checkbox" v-model="localSetting.fullWidthP_" @change="saveSettings">  {{i18n.t('fullWidthP_')}}
     </label>
     <label>
-      <input type="checkbox" v-model="setting.letters" @change="saveSettings">  {{i18n.t('letters')}}
+      <input type="checkbox" v-model="localSetting.letters" @change="saveSettings">  {{i18n.t('letters')}}
     </label>
     <label>
-      <input type="checkbox" v-model="setting.numbers" @change="saveSettings">  {{i18n.t('numbers')}}
+      <input type="checkbox" v-model="localSetting.numbers" @change="saveSettings">  {{i18n.t('numbers')}}
     </label>
-    <span>修改后需要重新打开yanknote</span>
   </div>
 </template>
 

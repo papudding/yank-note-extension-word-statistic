@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onBeforeMount, ref, defineProps } from 'vue'
 import { ctx } from '@yank-note/runtime-api'
 import i18n from '@/i18n'
 
@@ -8,23 +8,25 @@ import { IRange } from '@yank-note/runtime-api/types/types/third-party/monaco-ed
 const getSelectionInfo = ctx.editor.getSelectionInfo
 const whenEditorReady = ctx.editor.whenEditorReady
 
-const setting = ref({
-  chinese: false,
-  fullWidthP_: false,
-  letters: false,
-  numbers: false
-})
-onMounted(() => {
-  const savedSettings = window.localStorage.getItem('wordStatisticSettings')
-  if (savedSettings) {
-    setting.value = JSON.parse(savedSettings)
+// const props = defineProps<{
+defineProps<{
+  setting: {
+    chinese: boolean
+    fullWidthP_: boolean
+    letters: boolean
+    numbers: boolean
   }
-  ctx.statusBar.refreshMenu()
-})
+  onUpdateSetting:(val: any) => void
+}>()
 
 onBeforeMount(() => {
   disposable.forEach(d => d.dispose())
 })
+
+// onMounted(() => {
+//   console.log('WordStatistic mounted')
+//   console.log('WordStatistic props', props.setting)
+// })
 
 let disposable: { dispose(): void }[] = []
 
