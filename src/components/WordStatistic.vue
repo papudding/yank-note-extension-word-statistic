@@ -84,9 +84,9 @@ function getSelectText (selectionInfo: ReturnType<typeof getSelectionInfo>) {
       endLineNumber: selectionInfo.line,
       endColumn: selectionInfo.column,
     }
-    // console.log(selectionInfo)
-    // console.log(selectRange)
-    // console.log(ctx.editor.getEditor().getModel()?.getValueInRange(selectRange))
+    // console.log('selectionInfo', selectionInfo)
+    // console.log('selectRange', selectRange)
+    // console.log('content', ctx.editor.getEditor().getModel()?.getValueInRange(selectRange))
     return ctx.editor.getEditor().getModel()?.getValueInRange(selectRange)
   }
 }
@@ -94,18 +94,12 @@ function getAllText () {
   return ctx.editor.getEditor().getModel()?.getValue()
 }
 
-function refreshMenu () {
-  ctx.statusBar.refreshMenu()
-}
-
 whenEditorReady().then(({ editor }) => {
   updateSelectionInfo()
 
   disposable = [
     editor.onDidChangeCursorSelection(updateSelectionInfo),
-    editor.onDidChangeModel(updateSelectionInfo),
-    editor.onDidChangeCursorSelection(refreshMenu),
-    editor.onDidChangeModel(refreshMenu),
+    editor.onDidChangeModel(updateSelectionInfo)
   ]
 })
 </script>
