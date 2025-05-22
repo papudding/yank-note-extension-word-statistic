@@ -10,6 +10,7 @@ export default ctx.i18n.createI18n({
     p_select_single: 'please select single line',
     selected: 'selected',
     total: 'total',
+    word_cloud_entrence: 'word cloud',
   },
   'zh-CN': {
     w_s_manage: '字数统计管理',
@@ -20,5 +21,6 @@ export default ctx.i18n.createI18n({
     p_select_single: '请选择单行',
     selected: '已选择',
     total: '总计',
+    word_cloud_entrence: '词云',
   },
 })
