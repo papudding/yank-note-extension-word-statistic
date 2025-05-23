@@ -1,5 +1,5 @@
 # Yank Note 字数统计插件
-汉字、全角标点、英文字母、数字统计
+汉字、全角标点、英文字母、数字统计、词云
 ## 1. 总计
 ![total](https://github.com/user-attachments/assets/74ecfdb7-9a44-4021-b5e5-d0b147431cf9)
 ## 2. 选择文字统计
@@ -9,3 +9,8 @@
 ## 3. 配置维度
 点击统计信息来进行配置
 ![config](https://github.com/user-attachments/assets/be057d4b-151d-4c09-bb1b-117b632589ce)
+
+## 4. 词云
+点击词云按钮来生成词云
+
+![wordCloud]()

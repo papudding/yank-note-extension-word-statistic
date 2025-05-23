@@ -2,12 +2,10 @@ import { ref, watch, h } from 'vue'
 import { registerPlugin } from '@yank-note/runtime-api'
 import WordStatistic from '@/components/WordStatistic.vue'
 import StatisticManage from '@/components/StatisticManage.vue'
-import WordCloud from './components/WordCloud.vue'
+import WordCloud from './components/WordCloud/WordCloud.vue'
 import i18n from './i18n'
-import { Segment, useDefault } from 'segmentit'
 
 import './style.css'
-const segmentit = useDefault(new Segment())
 const extensionName = __EXTENSION_ID__
 
 // 创建共享状态
@@ -63,9 +61,8 @@ registerPlugin({
           onClick: () => {
             ctx.ui.useModal().alert({
               title: i18n.t('word_cloud_entrence'),
-              component: h(WordCloud, {
-                segmentit: segmentit,
-              }),
+              component: WordCloud,
+              modalWidth: '80%'
             })
           }
         }
