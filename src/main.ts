@@ -2,10 +2,10 @@ import { ref, watch, h } from 'vue'
 import { registerPlugin } from '@yank-note/runtime-api'
 import WordStatistic from '@/components/WordStatistic.vue'
 import StatisticManage from '@/components/StatisticManage.vue'
+import WordCloud from './components/WordCloud/WordCloud.vue'
 import i18n from './i18n'
 
 import './style.css'
-
 const extensionName = __EXTENSION_ID__
 
 // 创建共享状态
@@ -53,6 +53,20 @@ registerPlugin({
           })
         }
       }
+      menus['status-bar-tool']?.list?.push(
+        {
+          id: 'word-cloud-entrence',
+          type: 'normal',
+          title: i18n.t('word_cloud_entrence'),
+          onClick: () => {
+            ctx.ui.useModal().alert({
+              title: i18n.t('word_cloud_entrence'),
+              component: WordCloud,
+              modalWidth: '80%'
+            })
+          }
+        }
+      )
     })
 
     ctx.theme.addStyles(`
