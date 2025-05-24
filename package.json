@@ -1,6 +1,6 @@
 {
   "name": "yank-note-extension-word-statistic",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "displayName": "word statistic",
   "description": "A plugin for counting the number of Chinese characters, punctuation marks, etc.",
   "displayName_ZH-CN": "字数统计",
