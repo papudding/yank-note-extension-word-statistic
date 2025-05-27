@@ -13,7 +13,8 @@ const sharedSetting = ref({
   chinese: true,
   fullWidthP_: false,
   letters: false,
-  numbers: false
+  numbers: false,
+  paragraphs: false,
 })
 
 // 从localStorage加载设置

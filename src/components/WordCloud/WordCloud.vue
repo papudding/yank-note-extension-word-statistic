@@ -7,19 +7,19 @@ import RotationSelect from './RotationSelect.vue'
 import FontSelect from './FontSelect.vue'
 import { SegRes, getPreExceptWord } from './CalcPreExceptWord'
 import i18n from '@/i18n'
-import { Segment, useDefault, stopword } from 'segmentit'
+import { Segment, modules, stopword, dicts, synonym } from 'segmentit'
 import html2canvas from 'html2canvas'
 import { saveAs } from 'file-saver'
 
-const segmentit = useDefault(new Segment())
-
 onMounted(() => {
-  const tmpPreExceptWord = getPreExceptWord(segmentit, getAllText())
+  const tmpSegmentit = buildSegmentit('')
+  const tmpPreExceptWord = getPreExceptWord(tmpSegmentit, getAllText())
   preExceptWord.value = tmpPreExceptWord
-  wordsList.value = getWordsCount(getAllText(), tmpPreExceptWord).slice(0, 100)
+  wordsList.value = getWordsCount(tmpSegmentit, getAllText(), tmpPreExceptWord).slice(0, 100)
 })
 
 // ==================refs=========================start
+const segmentit = ref()
 const wordsList = ref<[string, number][]>([['', 0]])
 const spacing = ref<number>(0.25)
 
@@ -52,13 +52,26 @@ const rotationRender = (rotation: number[]) => {
 // ------------------preExceptWord------------------------
 const preExceptWord = ref<string[]>([])
 watch(preExceptWord, (newValue) => {
-  wordsList.value = getWordsCount(getAllText(), newValue).slice(0, maxWords.value)
+  wordsList.value = getWordsCount(segmentit.value, getAllText(), newValue).slice(0, maxWords.value)
 }, { deep: true })
 
 // ------------------maxWords------------------------
 const maxWords = ref<number>(100)
 watch(maxWords, (newValue) => {
-  wordsList.value = getWordsCount(getAllText(), preExceptWord.value).slice(0, newValue)
+  wordsList.value = getWordsCount(segmentit.value, getAllText(), preExceptWord.value).slice(0, newValue)
+})
+// ------------------customDict------------------------
+const customDict = ref<string>('')
+watch(customDict, (newValue) => {
+  if (!newValue) {
+    return
+  }
+  const finalCustomDict = buildCustomDict(newValue)
+  // console.log('finalCustomDict', finalCustomDict)
+  const tmpSegmentit = buildSegmentit(finalCustomDict)
+  const tmpPreExceptWord = getPreExceptWord(tmpSegmentit, getAllText())
+  preExceptWord.value = tmpPreExceptWord
+  wordsList.value = getWordsCount(tmpSegmentit, getAllText(), tmpPreExceptWord).slice(0, 100)
 })
 
 // ==================functions=========================
@@ -66,7 +79,20 @@ const getAllText = (): string => {
   return ctx.editor.getEditor().getModel()?.getValue() || ''
 }
 
-const getWordsCount = (text: string, preExceptWord: string[]): [string, number][] => {
+const buildSegmentit = (customDict: string) => {
+  const innerSegmentit = new Segment()
+  innerSegmentit.use(modules)
+  innerSegmentit.loadDict(dicts)
+  if (customDict) {
+    innerSegmentit.loadDict([customDict])
+  }
+  innerSegmentit.loadSynonymDict([synonym])
+  innerSegmentit.loadStopwordDict([stopword])
+  segmentit.value = innerSegmentit
+  return innerSegmentit
+}
+
+const getWordsCount = (segmentit:any, text: string, preExceptWord: string[]): [string, number][] => {
   const totalWordsRaw: SegRes[] = segmentit.doSegment(text, {
     stripPunctuation: true,
     stripStopWord: true,
@@ -90,6 +116,11 @@ const getWordsCount = (text: string, preExceptWord: string[]): [string, number][
   // 为了确保类型兼容，将排序后的结果进行类型转换
   const sortedEntries = Object.entries(wordCount).sort((a, b) => (b[1] as number) - (a[1] as number))
   return sortedEntries.map(([key, value]) => [key, value as number]) as [string, number][]
+}
+
+const buildCustomDict = (newCustomDict: string): string => {
+  const spiltWords = newCustomDict.split(',')
+  return spiltWords.map(word => word + '|0x00000000|9999999').join('\n')
 }
 
 const exportImage = async () => {
@@ -146,8 +177,8 @@ const exportImage = async () => {
         <FontSelect :set-font-family="setFontFamily" />
       </div>
       <div class="config-block">
-        <div>{{ i18n.t('wc_output') }}</div>
-        <button @click="exportImage">{{ i18n.t('wc_export_png') }}</button>
+        <div>{{ i18n.t('wc_custom_words') }}</div>
+        <textarea style="font-size: 12px;" rows=8 cols=14 v-model="customDict" />
       </div>
     </div>
     <!-- -------------------main-content---------------------------- -->
@@ -164,21 +195,29 @@ const exportImage = async () => {
       <div class="config-block">
         <div>{{ i18n.t('wc_words') }}</div>
         <div style="overflow: auto; height: 40vh; background-color: #dbdbdb;">
-          <table style="border-collapse: collapse; ">
+          <table style="border-collapse: collapse; font-size: 12px;">
             <thead>
               <tr>
                 <th style="border-bottom: 1px solid black;">{{ i18n.t('wc_word') }}</th>
                 <th style="border-bottom: 1px solid black;">{{ i18n.t('wc_count') }}</th>
+                <th style="border-bottom: 1px solid black;">{{ i18n.t('wc_operations') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(word, index) in wordsList" :key="index">
                 <td style="text-align: center; ">{{ word[0] }}</td>
                 <td style="text-align: center; ">{{ word[1] }}</td>
+                <td style="text-align: center; ">
+                  <button style="padding: 2px 5px;" @click="preExceptWord.push(word[0])">{{ i18n.t('wc_add_except') }}</button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
+      </div>
+      <div class="config-block">
+        <div>{{ i18n.t('wc_output') }}</div>
+        <button style="font-size: 12px" @click="exportImage">{{ i18n.t('wc_export_png') }}</button>
       </div>
     </div>
   </div>

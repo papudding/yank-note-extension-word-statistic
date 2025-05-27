@@ -8,6 +8,7 @@ const props = defineProps<{
     fullWidthP_: boolean
     letters: boolean
     numbers: boolean
+    paragraphs: boolean
   }
   onUpdateSetting:(val: any) => void
 }>()
@@ -16,6 +17,7 @@ const localSetting = ref({
   fullWidthP_: props.setting.fullWidthP_,
   letters: props.setting.letters,
   numbers: props.setting.numbers,
+  paragraphs: props.setting.paragraphs
 })
 // 保存设置
 function saveSettings () {
@@ -37,6 +39,9 @@ function saveSettings () {
     </label>
     <label>
       <input type="checkbox" v-model="localSetting.numbers" @change="saveSettings">  {{i18n.t('numbers')}}
+    </label>
+    <label>
+      <input type="checkbox" v-model="localSetting.paragraphs" @change="saveSettings">  {{i18n.t('paragraphs')}}
     </label>
   </div>
 </template>

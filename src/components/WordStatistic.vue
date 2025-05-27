@@ -15,6 +15,7 @@ defineProps<{
     fullWidthP_: boolean
     letters: boolean
     numbers: boolean
+    paragraphs: boolean
   }
   onUpdateSetting:(val: any) => void
 }>()
@@ -61,21 +62,27 @@ function countByUnicode (str) {
   return count
 }
 
-function countFullWidthPunctuation (str) {
+function countFullWidthPunctuation (str:string) {
   const matches = str.match(/[\uFF00-\uFFEF\u3000-\u303F]/g)
   return matches ? matches.length : 0
 }
-function countLetters (str) {
+function countLetters (str:string) {
   const matches = str.match(/[A-Za-z]/g)
   return matches ? matches.length : 0
 }
 
-function countNumbers (str) {
+function countNumbers (str:string) {
   const matches = str.match(/[0-9]/g)
   return matches ? matches.length : 0
 }
 
-function getSelectText (selectionInfo: ReturnType<typeof getSelectionInfo>) {
+function countParagraphs (str:string) {
+  // 按换行符分割文本，统计段落数
+  const paragraphs = str.split(/\n+/).filter(p => p.trim().length > 0)
+  return paragraphs.length
+}
+
+function getSelectText (selectionInfo: ReturnType<typeof getSelectionInfo>):string {
   // 将selectionInfo转换为IRange
   if (selectionInfo) {
     const selectRange: IRange = {
@@ -87,11 +94,13 @@ function getSelectText (selectionInfo: ReturnType<typeof getSelectionInfo>) {
     // console.log('selectionInfo', selectionInfo)
     // console.log('selectRange', selectRange)
     // console.log('content', ctx.editor.getEditor().getModel()?.getValueInRange(selectRange))
-    return ctx.editor.getEditor().getModel()?.getValueInRange(selectRange)
+    return ctx.editor.getEditor().getModel()?.getValueInRange(selectRange) || ''
+  } else {
+    return ''
   }
 }
-function getAllText () {
-  return ctx.editor.getEditor().getModel()?.getValue()
+function getAllText ():string {
+  return ctx.editor.getEditor().getModel()?.getValue() || ''
 }
 
 whenEditorReady().then(({ editor }) => {
@@ -117,6 +126,7 @@ whenEditorReady().then(({ editor }) => {
         <span v-if="setting.fullWidthP_"> | {{countFullWidthPunctuation(getSelectText(selectionInfo))}} {{ i18n.t('fullWidthP_') }}</span>
         <span v-if="setting.letters"> | {{countLetters(getSelectText(selectionInfo))}} {{ i18n.t('letters') }}</span>
         <span v-if="setting.numbers"> | {{countNumbers(getSelectText(selectionInfo))}} {{ i18n.t('numbers') }}</span>
+        <span v-if="setting.paragraphs"> | {{countParagraphs(getSelectText(selectionInfo))}} {{ i18n.t('paragraphs') }}</span>
       </span>
       <span v-else>
         <span>{{ i18n.t('total') }}: </span>
@@ -124,6 +134,7 @@ whenEditorReady().then(({ editor }) => {
         <span v-if="setting.fullWidthP_"> | {{ i18n.t('fullWidthP_') }}: {{countFullWidthPunctuation(getAllText())}} </span>
         <span v-if="setting.letters"> | {{ i18n.t('letters') }}: {{countLetters(getAllText())}}</span>
         <span v-if="setting.numbers"> | {{ i18n.t('numbers') }}: {{countNumbers(getAllText())}}</span>
+        <span v-if="setting.paragraphs"> | {{ i18n.t('paragraphs') }}: {{countParagraphs(getAllText())}}</span>
       </span>
     </span>
   </span>

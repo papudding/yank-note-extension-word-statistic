@@ -7,6 +7,7 @@ export default ctx.i18n.createI18n({
     fullWidthP_: 'full width punctuation',
     letters: 'Letters',
     numbers: 'Numbers',
+    paragraphs: 'paragraphs',
     p_select_single: 'please select single line',
     selected: 'selected',
     total: 'total',
@@ -23,6 +24,8 @@ export default ctx.i18n.createI18n({
     wc_count: 'count',
     wc_output: 'output',
     wc_export_png: 'export pic',
+    wc_add_except: 'except',
+    wc_operations: 'operations',
   },
   'zh-CN': {
     w_s_manage: '字数统计管理',
@@ -30,6 +33,7 @@ export default ctx.i18n.createI18n({
     fullWidthP_: '全角标点',
     letters: '字母',
     numbers: '数字',
+    paragraphs: '段落',
     p_select_single: '请选择单行',
     selected: '已选择',
     total: '总计',
@@ -46,5 +50,7 @@ export default ctx.i18n.createI18n({
     wc_count: '次数',
     wc_output: '输出',
     wc_export_png: '导出图片',
+    wc_add_except: '排除',
+    wc_operations: '操作',
   },
 })
